@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
-/* general */
+/* general styling*/
 * {
     margin: 0;
     padding: 0;
@@ -14,27 +14,22 @@ body {
     background-color: #f4f4f4;
 }
 
-/* header */
+/* header components */
 .header {
     text-align: center;
-    padding: 20px 0;
 }
 
 .header h1 {
-    margin-bottom: 20px;
+    margin: 10px auto;
 }
 
-/* search */
 #searchForm {
     margin-bottom: 20px;
 }
 
-/* button */
 input[type="text"],
 button {
-    padding: 10px;
-    margin-right: 5px;
-    border: 1px solid #333;
+    padding: 5px;
     border-radius: 5px;
 }
 
@@ -43,13 +38,10 @@ button {
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-right: 5px;
 }
 
-button:hover {
-    background-color: #555;
-}
-
-/* results */
+/* search results */
 #results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -92,13 +84,12 @@ button:hover {
     opacity: 1;
 }
 
-/* details */
+/* book details */
 #details {
     display: none;
     margin-top: 20px;
     padding: 20px;
     background: #fff;
-    border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -114,6 +105,24 @@ button:hover {
 
 #details p {
     margin-bottom: 20px;
+}
+
+#favouriteButton {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 50%;
+
+    position: absolute;
+    margin: 20px 0;
+}
+
+#favouriteButton.bookmarked {
+    background-color: #f00;
 }
 
 /* tags */
@@ -138,31 +147,19 @@ button:hover {
     margin: 20px auto;
     padding: 10px 20px;
     background: none;
-    border: 1px solid transparent;
-    border-radius: 5px;
     cursor: pointer;
     transition: border-color 0.3s ease;
 }
 
-#backToResults:hover {
-    text-decoration: underline;
-}
- 
-/* bookmarks */
-#viewBookmarks {
-    display: none;
-    margin-top: 20px;
+/* favourites list */
+#favouritesList {
+    margin: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
 }
 
-/* .favorite-icon.bookmarked {
-    color: #ff4136;
+.favourite-item {
+    margin-bottom: 5px;
+    padding: 5px;
 }
-
-.favorite-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    color: #ccc;
-    cursor: pointer;
-} */

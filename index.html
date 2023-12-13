@@ -10,20 +10,27 @@
     <script src="js/main.js" defer></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
- 
+
 <body>
     <div class="header">
+        <!-- header section -->
         <h1>Find Your Next Read</h1>
         <form id="searchForm">
             <input type="text" id="searchText" placeholder="Enter your mood here...">
             <button>Search!</button>
         </form>
+
+        <!-- favourite section -->
+        <h2 id="favouritesSectionTitle" style="display: none;">Favourites</h2>
+        <div id="favouritesList" style="display: none;"></div>
+
+        <!-- search result -->
         <div id="results"></div>
 
-        <a href="#" id="backToResults">Back to search results</a>
-        <button id="viewBookmarks">Bookmarks</button>
-
-        <div id="details"></div>
+        <!-- detail section -->
+        <a href="#" id="backToResults" style="display: none;">Back to search results</a>
+        <div id="details" style="display: none;"></div>
+        <button id="favouriteButton" style="display: none" ;>Favourite</button>
     </div>
 
 </html>

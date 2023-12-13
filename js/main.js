@@ -13,7 +13,11 @@ const openLibrarySearch = {
             searchResults: document.querySelector('#results'),
             bookDetails: document.querySelector('#details'),
             backToResults: document.querySelector('#backToResults'),
+            favouriteButton: document.querySelector('#favouriteButton'),
+            favouritesList: document.querySelector('#favouritesList')
         };
+
+        this.favourites = [];
 
         this.dom.searchForm.addEventListener('submit', ev => {
             // console.log(this.dom.searchText.value);
@@ -25,9 +29,7 @@ const openLibrarySearch = {
 
         this.dom.searchResults.addEventListener('click', ev => {
             const bookElement = ev.target.closest('.book-result');
-
             // console.log(`book clicked`, ev.target);
-
             if (bookElement && bookElement.dataset.id) {
                 this.loadBookDetails(bookElement.dataset.id);
             }
@@ -37,12 +39,14 @@ const openLibrarySearch = {
             this.dom.searchResults.style.display = 'grid';
             this.dom.backToResults.style.display = 'none';
             this.dom.bookDetails.style.display = 'none';
+            this.showFavourites();
         }); // back button
 
-        // this.dom.viewBookmarks = document.querySelector('#viewBookmarks');
-        // this.dom.viewBookmarks.addEventListener('click', () => {
-        //     this.showBookmarkedBooks();
-        // });
+        this.dom.favouriteButton.addEventListener('click', () => {
+            const currentBookId = this.currentBookId;
+            const currentBookTitle = this.currentBookTitle;
+            this.toggleFavourite(currentBookId, currentBookTitle);
+        }); // click save bookmarked id
     },
 
     generateCoverImageUrl(coverId, size) {
@@ -58,20 +62,21 @@ const openLibrarySearch = {
 
         this.dom.searchResults.replaceChildren();
 
-        const loadingNode = document.createElement('p');
-        loadingNode.innerHTML = "Loading search results...";
-        this.dom.searchResults.appendChild(loadingNode);
-
         // genre mapping
         const genreMapping = {
             'Relaxed': 'Romance',
-            'Adventurous': 'Adventure',
+            'Adventurous': 'Mystery',
+            'Nostalgic': 'Classic',
+            'Suspenseful': 'Revolutions',
+            'Curious': 'Fiction'
         };
 
         const genres = genreMapping[mood];
 
         if (!genres) {
-            console.error('Change your mood input');
+            const message = document.createElement('p');
+            message.textContent = 'Change your mood input';
+            this.dom.searchResults.appendChild(message);
             return;
         }
 
@@ -79,6 +84,10 @@ const openLibrarySearch = {
         // const subjectRequests = genres.map(subject =>
         //     axios.get(`${this.config.OPEN_LIBRARY_BASE_URL}/subjects/${subject}.json`)
         // );
+
+        const loadingNode = document.createElement('p');
+        loadingNode.innerHTML = "Loading search results...";
+        this.dom.searchResults.appendChild(loadingNode);
 
         axios.get(`${this.config.OPEN_LIBRARY_BASE_URL}/search.json`, {
             params: {
@@ -108,7 +117,7 @@ const openLibrarySearch = {
         // }
 
         for (const book of books) {
-            // console.log(`book array:`, book);
+            console.log(`book array:`, book);
             const bookElement = document.createElement('div');
             bookElement.classList.add('book-result');
 
@@ -129,7 +138,7 @@ const openLibrarySearch = {
     loadBookDetails(bookId) {
         axios.get(`${this.config.OPEN_LIBRARY_BASE_URL}${bookId}.json`)
             .then(res => {
-                console.log(`details:`, res.data);
+                // console.log(`details:`, res.data);
                 this.renderBookDetails(res.data);
             })
             .catch(err => {
@@ -143,8 +152,9 @@ const openLibrarySearch = {
         this.dom.searchResults.style.display = 'none';
         this.dom.backToResults.style.display = 'block';
         this.dom.bookDetails.style.display = 'block';
-
         this.dom.bookDetails.replaceChildren();
+
+        // load details to page render 
 
         const img = document.createElement('img');
         img.src = this.generateCoverImageUrl(bookData.covers[0], 'L');
@@ -165,7 +175,6 @@ const openLibrarySearch = {
         }
         this.dom.bookDetails.appendChild(summary);
 
-
         // fetch data from 'subject' to output as individual tags
         const tagsContainer = document.createElement('div');
         tagsContainer.className = 'tags-container';
@@ -177,15 +186,54 @@ const openLibrarySearch = {
                 tag.className = 'tag';
                 tagsContainer.appendChild(tag);
             });
-        } else {
-            const noTags = document.createElement('h3');
-            noTags.textContent = 'No tags available.';
-            noTags.className = 'tag';
-            tagsContainer.appendChild(noTags);
         }
 
+        // display favourite button
+        this.dom.favouriteButton.style.display = 'block';
+
+        this.currentBookId = bookData.key;
+        this.currentBookTitle = bookData.title;
+
         this.dom.bookDetails.appendChild(tagsContainer);
+        this.updateFavouriteButtonStatus(bookData.key);
     },
+
+    toggleFavourite(bookId, bookTitle) {
+        const favouriteIndex = this.favourites.findIndex(fav => fav.id === bookId);
+        if (favouriteIndex !== -1) {
+            this.favourites.splice(favouriteIndex, 1);
+        } else {
+            this.favourites.push({ id: bookId, title: bookTitle });
+        }
+        this.showFavourites();
+        this.updateFavouriteButtonStatus(bookId);
+    },
+
+    showFavourites() {
+        this.dom.favouritesList.innerHTML = '';
+        this.favourites.forEach(fav => {
+            const favElement = document.createElement('div');
+            favElement.classList.add('favourite-item');
+            favElement.textContent = fav.title;
+            this.dom.favouritesList.appendChild(favElement);
+        });
+
+        if (this.favourites.length > 0) {
+            this.dom.favouritesList.style.display = 'block';
+            document.getElementById('favouritesSectionTitle').style.display = 'block';
+        } else {
+            this.dom.favouritesList.style.display = 'none';
+            document.getElementById('favouritesSectionTitle').style.display = 'none';
+        }
+    },
+
+    updateFavouriteButtonStatus(bookId) {
+        if (this.favourites.some(fav => fav.id === bookId)) {
+            this.dom.favouriteButton.classList.add('bookmarked');
+        } else {
+            this.dom.favouriteButton.classList.remove('bookmarked');
+        }
+    }
 };
 
 openLibrarySearch.initUi();
